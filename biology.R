@@ -17,23 +17,47 @@ library('gridExtra')
 library('reshape2')
 
 # Exploratory analysis
-# Omitting NAs
-newBio <- subset(bioData, !is.na(bioData$dc.en.menores.de.5.años))
-
-tmp0 <- read.csv(listFiles[1])
-tmp1 <- read.csv(listFiles[1])
-for(i in 2:7){
-    name <- listFiles[i]
-    tmp <- read.csv(listFiles[i])
-    tmp$ddc <- tmp$dc.en.menores.de.5.años - tmp0$dc.en.menores.de.5.años
-    tmp$ddct <- tmp$dc.en.menores.de.5.años - tmp1$dc.en.menores.de.5.años
-    tmp$Invt <- tmp$Inversión.pública + tmp0$Inversión.pública
-    tmp0 <- tmp
-    write.table(tmp, file = name, sep = ",")
-}
-
-# Multiple plotting
-ggplot(aes(x = year), data = subset(bioData, Regiones == "Huancavelica")) + 
+# Multiple plotting for investments
+ggplot(aes(x = year), data = subset(bioData, Regiones == "Loreto")) + 
     geom_line(aes(y = Inversión.salud, colour = "Inversión.salud")) + 
     geom_line(aes(y = Inversión.educación, colour = "Inversión.educación")) + 
-    geom_line(aes(y = Inversión.transporte, colour = "Inversión.transporte"))
+    geom_line(aes(y = Inversión.transporte, colour = "Inversión.transporte")) + 
+    theme_bw()
+
+# Desidad de profesionales
+ggplot(aes(x = year), data = subset(bioData, Regiones == "Loreto")) + 
+    geom_line(aes(y = Médicos.asignados/Población, colour = "Médicos.asignados/Población")) + 
+    geom_line(aes(y = enfermeros/Población, colour = "enfermeros/Población")) + 
+    geom_line(aes(y = obstétras/Población, colour = "obstétras/Población")) + 
+    theme_bw()
+
+# Dc en < 5 años
+ggplot(aes(x = year), data = subset(bioData, Regiones == "Junin")) + 
+    geom_line(aes(y = dc.en.menores.de.5.años, colour = "dc.en.menores.de.5.años")) + 
+    theme_bw()
+
+# Rurality vs dc < 5 years
+da <- read.csv('data.csv')
+
+ggplot(aes(x = Indice.ruralidad), data = subset(da, Regiones == "Lima")) + 
+    geom_line(aes(y = dc.en.menores.de.5.años, colour = "dc.en.menores.de.5.años")) + 
+    theme_bw()
+
+# Rurality vs goverment expenditure
+ggplot(aes(x = Indice.ruralidad), data = subset(da, Regiones == "Cuzco")) + 
+    geom_line(aes(y = Inversión.salud, colour = "Inversión.salud")) + 
+    geom_line(aes(y = Inversión.educación, colour = "Inversión.educación")) + 
+    geom_line(aes(y = Inversión.transporte, colour = "Inversión.transporte")) + 
+    theme_bw()
+
+ggplot(aes(x = Indice.ruralidad), data = subset(da, Regiones == "Cuzco")) + 
+    geom_line(aes(y = Médicos.asignados/Población, colour = "Médicos.asignados/Población")) + 
+    geom_line(aes(y = enfermeros/Población, colour = "enfermeros/Población")) + 
+    geom_line(aes(y = obstétras/Población, colour = "obstétras/Población")) + 
+    theme_bw()
+
+# Rurality over time
+ggplot(aes(x = year), data = subset(da, Regiones == "Cuzco")) + 
+    geom_line(aes(y = Indice.ruralidad, colour = "Indice.ruralidad")) + 
+    theme_bw()
+
